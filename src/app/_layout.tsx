@@ -1,5 +1,11 @@
 // import Container from "@/components/Container";
 
+import { Suspense } from "react";
+
 export default function AppLayout({ children } : { children: React.ReactNode}) {
-  return children;
+  return (
+    <Suspense>
+      {children}
+    </Suspense>
+  );
 }
