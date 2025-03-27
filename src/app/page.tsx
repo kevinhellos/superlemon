@@ -1,103 +1,151 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation"; // Import search params hook
+import ChatLayout from "@/layout/ChatLayout";
+import { useChat } from "@ai-sdk/react";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import ChatForm from "@/components/form/ChatForm";
+import Bar from "@/components/bar/Bar";
+import Navbar from "@/components/navbar/Navbar";
+import { v4 as uuidv4 } from "uuid";
+
+export default function Page() {
+  const searchParams = useSearchParams(); // Get query params
+  const [token, setToken] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [localMessages, setLocalMessages] = useState<any[]>([]); // Stores messages from localStorage
+  const [currentChatId, setCurrentChatId] = useState<string>("");
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Load token from localStorage
+      const storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        setToken(storedToken);
+      }
+
+      // Check if a chat ID is provided in the query params
+      const chatIdFromQuery = searchParams.get("chat");
+      const chatId = chatIdFromQuery || uuidv4(); // Use query param or generate new chat ID
+      setCurrentChatId(chatId);
+
+      // Load chat history for the given chat ID
+      const storedChatHistory = JSON.parse(localStorage.getItem(`chat_${chatId}`) || "[]");
+      if (storedChatHistory.length > 0) {
+        setLocalMessages(storedChatHistory);
+      }
+    }
+  }, [searchParams]); // Re-run when URL query params change
+
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: "/api/chat",
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    onError: (error: any) => {
+      if (error.message.includes("Unauthorized")) {
+        setErrorMessage("You need to login to start a chat");
+      } else {
+        setErrorMessage("An error occurred while generating a response. Please try again later.");
+      }
+    }
+  });
+
+  async function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); // Prevent default form submission behavior
+
+    // Check if currentChatId exists, if not, generate a new one
+    const chatId = currentChatId || uuidv4();
+    setCurrentChatId(chatId);
+    
+    // Immediately push the uuid to the current url
+    router.push(`/?chat=${chatId}`);
+
+    // Retrieve the existing chat list from localStorage
+    let chatList = JSON.parse(localStorage.getItem("chat_list") || "[]");
+
+    // Add the new chatId only if it's not already in the list
+    if (!chatList.some((chat: any) => chat.chatId === chatId)) {
+      chatList.push({
+        chatId,
+        message: input
+      });
+      localStorage.setItem("chat_list", JSON.stringify(chatList));
+    }
+
+    handleSubmit(event); // Call the original submit function
+  }
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  function mergeMessages(existingMessages: any[], newMessages: any[]) {
+    const messageMap = new Map();
+    [...existingMessages, ...newMessages].forEach((msg) => {
+      messageMap.set(msg.id, msg);
+    });
+    return Array.from(messageMap.values());
+  }
+
+  // Save chat history to localStorage whenever a new message is sent
+  useEffect(() => {
+    if (messages.length > 0) {
+      let existingHistory = JSON.parse(localStorage.getItem(`chat_${currentChatId}`) || "[]");
+
+      // Merge new messages with existing ones, removing duplicates
+      const updatedHistory = mergeMessages(existingHistory, messages);
+
+      // Save updated chat history
+      localStorage.setItem(`chat_${currentChatId}`, JSON.stringify(updatedHistory));
+
+      // Update local state
+      setLocalMessages(updatedHistory);
+    }
+  }, [messages]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <ProtectedRoute loginUrl="/sign-in">
+      <ChatLayout>
+        <Navbar />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        {/* Chat Messages */}
+        <div className="flex flex-col w-full max-w-4xl mx-auto h-[80vh] overflow-y-auto px-2">
+          {/* Render stored chat history first */}
+          {localMessages.map((message, index) => (
+            <div key={`${message.id}-${index}`} className={`whitespace-pre-wrap mb-3 ${message.role === "user" ? "chat chat-end" : ""}`}>
+              {message.parts.map((part: any, i: number) => {
+                if (part.type === "text") {
+                  return (
+                    <div
+                      className={`${message.role === "user" ? "chat-bubble chat-bubble-neutral rounded-lg" : ""}`}
+                      key={`${message.id}-${i}`}
+                    >
+                      {part.text}
+                    </div>
+                  );
+                }
+              })}
+            </div>
+          ))}
+
+          {/* Invisible div for scrolling */}
+          <div ref={messagesEndRef} />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {errorMessage && <Bar variant="red" message={errorMessage} cn="max-w-4xl" />}
+
+        <ChatForm
+          handleSubmit={handleFormSubmit}
+          input={input}
+          handleInputChange={handleInputChange}
+        />
+        
+      </ChatLayout>
+    </ProtectedRoute>
   );
 }
