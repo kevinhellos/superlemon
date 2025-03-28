@@ -17,7 +17,7 @@ export async function getUserChatHistory(userUid: string) {
     });
 
     // Fallback sorting (like Firestore default order)
-    chats.reverse(); // Reverse array to get latest on top
+    // chats.reverse(); // Reverse array to get latest on top
 
     return chats; // Return the array of chat objects
   } 
