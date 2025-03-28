@@ -31,6 +31,7 @@ export default function ChatForm(
           <Send strokeWidth="1.5" size="19" className="mx-auto text-center" />
         </button>
       </form>
+      
       <span className="text-xs block text-gray-300 text-center mb-1">
         {process.env.NEXT_PUBLIC_APP_NAME} version {appData.version}
       </span>

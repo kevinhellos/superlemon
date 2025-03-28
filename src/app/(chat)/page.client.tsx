@@ -22,10 +22,11 @@ export default function Chat() {
   const [localMessages, setLocalMessages] = useState<any[]>([]); // Stores messages from localStorage
   const [currentChatId, setCurrentChatId] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<any[]>([]);
+  const [chatResponseIsLoading, setChatResponseIsLoading] = useState<boolean>(false);
   const router = useRouter();
 
   // Code works - DO NOT TOUCH
-  async function loadChatHistoryFromDb(chatId: string) {
+  async function getChatHistoryFromDb(chatId: string) {
     let chatHistory: any = {};
     const chatHistorySnapshot = await getDoc(doc(db, "chats", chatId));
     
@@ -57,8 +58,8 @@ export default function Chat() {
       setCurrentChatId(chatId);
 
       // Load chat history for the given chat ID - DB
-      async function doLoadChatHistoryFromDb(chatIdFromQuery: string) {
-        let storedChatHistory = await loadChatHistoryFromDb(chatIdFromQuery);
+      async function loadChatHistoryFromDb(chatIdFromQuery: string) {
+        let storedChatHistory = await getChatHistoryFromDb(chatIdFromQuery);
         if (JSON.parse(storedChatHistory["json"]).length > 0) {
           setLocalMessages(JSON.parse(storedChatHistory["json"]));
         }
@@ -67,7 +68,7 @@ export default function Chat() {
       // If chatIdFromQuery exists as a query in the current param
       if (chatIdFromQuery) {
         // console.log(`[CLIENT LOG]: Loading chat history for chat id ${chatIdFromQuery}`);
-        doLoadChatHistoryFromDb(chatIdFromQuery);
+        loadChatHistoryFromDb(chatIdFromQuery);
       }
 
     }
@@ -78,6 +79,9 @@ export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: "/api/chat",
     headers: token ? { Authorization: `Bearer ${token}` } : {},
+    
+    onResponse: () => setChatResponseIsLoading(false),
+    
     onError: (error: any) => {
       // console.error("[CLIENT ERROR]: " + error);
       if (error.message.includes("Unauthorized")) {
@@ -96,6 +100,8 @@ export default function Chat() {
    // Code works - DO NOT TOUCH
   async function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); // Prevent default form submission behavior (page refresh)
+
+    setChatResponseIsLoading(true);
 
     // Check if currentChatId exists, if not, generate a new one
     const chatId = currentChatId || uuidv4();
@@ -122,9 +128,8 @@ export default function Chat() {
 
   // Code works - DO NOT TOUCH
   useEffect(() => {
-    async function fetchChatHistory() {
+    async function getChatHistoryFromDbAndRender() {
       if (!currentChatId) return;
-      
       try {
         const chatDoc = await getDoc(doc(db, "chats", currentChatId));
         if (chatDoc.exists()) {
@@ -137,8 +142,8 @@ export default function Chat() {
         console.error("[CLIENT ERROR]: failed loading chat history: ", error);
       }
     };
-  
-    fetchChatHistory();
+
+    getChatHistoryFromDbAndRender();
   }, [currentChatId]); // Run when chat ID changes
   // Code works - DO NOT TOUCH
 
@@ -174,7 +179,7 @@ export default function Chat() {
         <Navbar />
 
         {/* Chat Messages */}
-        <div className="flex flex-col w-full max-w-4xl mx-auto h-[80vh] overflow-y-auto px-2">
+        <div className="flex flex-col w-full max-w-4xl mx-auto h-[78vh] overflow-y-auto px-2">
           
           {/* Render stored chat history first */}
           {localMessages.map((message, index) => (
@@ -196,6 +201,8 @@ export default function Chat() {
               })}
             </div>
           ))}
+
+          {chatResponseIsLoading && <span className="loading loading-dots loading-xl"></span>}
 
           {/* Invisible div for scrolling */}
           <div ref={messagesEndRef} />

@@ -2,15 +2,14 @@
 
 import { signInWithGoogle } from "@/lib/auth/auth-client";
 import { auth } from "@/lib/auth/firebase-client";
+import { AuthProviderType } from "@/models";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-type AuthProvider = "Google"| "Email" | "Hybrid";
-
 export default function SignIn(
     { appName, provider, afterSignInUrl } : 
-    { appName?: string, provider: AuthProvider, afterSignInUrl: string }) {
+    { appName?: string, provider: AuthProviderType, afterSignInUrl: string }) {
 
     const router = useRouter();
 
@@ -23,7 +22,7 @@ export default function SignIn(
           }
         } 
         catch (error: any) {
-          console.error("Sign-in error: ", error.message);
+          console.error("[CLIENT ERROR]: sign-in error: ", error.message);
         }
     };
 
@@ -59,7 +58,7 @@ export default function SignIn(
                 setErrorMessage("Failed to authenticate");
             }
             // setErrorMessage(error.message);
-            console.error("Sign-in error: ", error.message);
+            console.error("[CLIENT ERROR]: sign-in error: ", error.message);
         }
     }
 
@@ -94,8 +93,13 @@ export default function SignIn(
 
     return (
         <div className="mx-auto mt-[15vh] max-w-md overflow-auto p-10 shadow-xs border border-gray-200 rounded-md">
-            <h2 className="text-xl text-center font-serif">
+            {/* <h2 className="text-xl text-center font-serif">
                 {appName ? `${appName}` : "Sign in"}
+            </h2> */}
+
+            <h2 className=" text-xl font-serif flex mx-auto justify-center">
+              <img src="/assets/imgs/lemon.png" alt="App Icon" className="w-7 h-7 me-2" />
+              {process.env.NEXT_PUBLIC_APP_NAME}
             </h2>
             <p className="text-center text-gray-500 mb-5 text-sm">Please sign in to continue</p>
 

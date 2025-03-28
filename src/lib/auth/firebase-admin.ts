@@ -3,7 +3,7 @@ import admin from "firebase-admin";
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY!);
 
 if (!serviceAccount) {
-  throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY is not set");
+  throw new Error("[SERVER ERROR]: Firebase Service Account is required");
 }
 
 if (!admin.apps.length) {

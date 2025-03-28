@@ -34,6 +34,12 @@ body {
   px-3 py-2.5 rounded-lg 
   cursor-pointer text-wrap
 }
+.k-btn-plain {
+  @apply
+  bg-gray-50 hover:bg-gray-100 active:bg-gray-200 
+  px-3 py-2.5 rounded-lg 
+  cursor-pointer text-wrap
+}
 .k-btn-black {
   @apply
   shadow-xs bg-black text-white hover:opacity-85 active:opacity-100

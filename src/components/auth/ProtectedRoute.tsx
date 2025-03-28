@@ -2,19 +2,19 @@
 
 import { useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Unsubscribe, onAuthStateChanged } from "firebase/auth";
+import { Unsubscribe, User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/auth/firebase-client";
 
 export default function ProtectedRoute(
-    { children, loginUrl } : 
-    { children: React.ReactNode, loginUrl: string }
+  { children, loginUrl } : 
+  { children: React.ReactNode, loginUrl: string }
 ) {
   // const [loading, setLoading] = useState<boolean>(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   
   const router = useRouter();
 
-  const [user, setUser] = useState<any>();
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     // setTimeout(() => {
