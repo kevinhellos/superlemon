@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 export default function page() {
   return (
     <>
-
       <Bar
         variant="blue"
         message="SuperLemon is currently in BETA program. It is only available for BETA testers and administrators."

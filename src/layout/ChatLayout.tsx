@@ -1,43 +1,35 @@
+"use client";
+
 import SignOut from "@/components/auth/SignOut";
+import { auth } from "@/lib/auth/firebase-client";
+import { getUserChatHistory } from "@/lib/chats/chat";
 import { truncateText } from "@/lib/utils";
 import { LogOut, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
-// import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+interface ChatHistory {
+  id: string;
+  json: string;
+  user_uid: string;
+}
+
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
-  const [chatHistory, setChatHistory] = useState<{ chatId: string; message: string }[]>([]);
-  // const router = useRouter();
+  const searchParams = useSearchParams();
+  const [currentChatId, setCurrentChatId] = useState(searchParams.get("chat") || "");
+  const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedChats = JSON.parse(localStorage.getItem("chat_list") || "[]");
-      setChatHistory(storedChats);
+    async function loadUserChatHistory() {
+      if (auth?.currentUser?.uid) {
+        const userChats: ChatHistory[] = await getUserChatHistory(auth.currentUser.uid);
+        setChatHistory(userChats);
+      }
     }
-  }, []);
 
-  useEffect(() => {
-    const updateChatHistory = () => {
-      const storedChats = JSON.parse(localStorage.getItem("chat_list") || "[]");
-      setChatHistory(storedChats);
-    };
-
-    window.addEventListener("storage", updateChatHistory);
-    return () => window.removeEventListener("storage", updateChatHistory);
-  }, []);
-
-  const handleDeleteChat = (chatId: string) => {
-    const updatedChats = chatHistory.filter(chat => chat.chatId !== chatId);
-    setChatHistory(updatedChats);
-    localStorage.setItem("chat_list", JSON.stringify(updatedChats));
-    
-    // If the deleted chat is currently viewed, redirect to the main page
-    const currentUrlParams = new URLSearchParams(window.location.search);
-    if (currentUrlParams.get("chat") === chatId) {
-      // router.push("/");
-      (window as any).location.href = "/"; // Force refresh to clear messages states on the chat area
-    }
-  };
+    loadUserChatHistory();
+  }, [auth.currentUser]); // Re-run when user logs in/out
 
   return (
     <div className="drawer lg:drawer-open">
@@ -46,58 +38,61 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
         {children}
       </div>
 
-      {/* Sidebar Drawer */}
       <div className="drawer-side border border-t-0 border-l-0 border-b-0 border-r-gray-200">
         <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="bg-gray-5 text-base-content min-h-full w-72 p-4">
-          {/* App Title */}
-          <li className="mb-3">
-            <span className="flex text-xl font-serif mx-auto justify-center">
-              <img 
-                src="/assets/imgs/lemon.png" 
-                alt={`${process.env.NEXT_PUBLIC_APP_NAME} icon`} 
-                className="w-7 h-7 me-2"
-              />
-              {process.env.NEXT_PUBLIC_APP_NAME}
-            </span>
+        <ul className="bg-white text-base-content min-h-full w-72 p-4">
+          
+          {/* App Name */}
+          <li className="mb-3 flex text-xl font-serif mx-auto justify-center">
+            <img src="/assets/imgs/lemon.png" alt="App Icon" className="w-7 h-7 me-2" />
+            {process.env.NEXT_PUBLIC_APP_NAME}
           </li>
 
           {/* New Chat Button */}
           <li className="w-full mb-3 rounded-md cursor-pointer">
             <a href="/" className="k-btn-white w-full text-center flex justify-center">
-              <Plus strokeWidth="1.5" size="19" className="mt-[2px] me-2"/>
+              <Plus strokeWidth="1.5" size="19" className="mt-[2px] me-2" />
               New chat
             </a>
           </li>
 
           {/* Chat History */}
-          {chatHistory.map((chat) => (
-            <li 
-              key={chat.chatId} 
-              className="w-full hover:bg-gray-50 active:bg-gray-100 mb-3 rounded-md cursor-pointer flex justify-between"
-            >
-              <Link href={`?chat=${chat.chatId}`} className="px-3 py-2 block w-full">
-                {truncateText(chat.message, 20) || "New Chat"}
-              </Link>
-              <button 
-                type="button" 
-                onClick={() => {
-                  handleDeleteChat(chat.chatId);
-                }} className="mt-0 me-2 cursor-pointer">
-                <Trash2 strokeWidth="1.5" size="19" className="hover:text-red-700"/>
-              </button>
-            </li>
-          ))}
+          {chatHistory.map((chat) => {
+            let chatPreview = "No messages";
+
+            try {
+              const parsedJson = JSON.parse(chat.json);
+              chatPreview = parsedJson[0]?.content ? truncateText(parsedJson[0].content, 35) : "Empty chat";
+            } 
+            catch (error) {
+              console.error("[CLIENT ERROR]: Invalid chat JSON:", chat.json);
+            }
+
+            return (
+              <li
+                key={chat.id}
+                className={`w-full hover:bg-gray-50 active:bg-gray-100 mb-3 rounded-md cursor-pointer flex justify-between ${
+                  currentChatId === chat.id ? "bg-gray-100" : ""
+                }`}
+                onClick={() => setCurrentChatId(chat.id)}
+              >
+                <Link href={`?chat=${chat.id}`} className="px-3 py-2 block w-full text-sm">
+                  {chatPreview}
+                </Link>
+              </li>
+            );
+          })}
 
           {/* Logout Button */}
-          <li className="fixed bottom-0 mb-2">
+          <li className="fixed bottom-0 mb-2 w-full">
             <a className="px-2 py-2 block w-full">
               <SignOut
                 cn="px-3 py-2.5 hover:bg-red-50 hover:text-red-700 cursor-pointer rounded-md flex"
-                icon={<LogOut strokeWidth="1.5" size="19" className="mt-[2px] me-2"/>}
+                icon={<LogOut strokeWidth="1.5" size="19" className="mt-[2px] me-2" />}
               />
             </a>
           </li>
+
         </ul>
       </div>
     </div>

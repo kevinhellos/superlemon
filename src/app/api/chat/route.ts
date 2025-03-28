@@ -49,8 +49,16 @@ export async function POST(req: Request) {
 
         return result.toDataStreamResponse();
     } 
-    catch (error) {
-        console.error("Error in /api/chat:", error);
-        return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
+    catch (error: any) {
+        console.error("[SERVER ERROR]: Error in /api/chat: " + error);
+
+        // Handle error codes
+        if (error.code.includes("auth/id-token-expired")) {
+            return new Response(JSON.stringify({ error: "Relogin required" }), { status: 500 });
+        }
+
+        else {
+            return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
+        }
     }
 }

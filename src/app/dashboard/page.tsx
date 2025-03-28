@@ -39,11 +39,9 @@ export default function Page() {
         setUser={setUser}
         setToken={setToken}
       >
-
         <h2 className="text-2xl mt-5">Welcome, {user?.displayName || "Guest"}</h2>
         <pre>{JSON.stringify(products, null, 1)}</pre>
         <SignOut afterSignOutUrl="/" />
-
       </UserProvider>
     </ProtectedRoute>
   );

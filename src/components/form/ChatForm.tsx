@@ -4,8 +4,8 @@ import { Send } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 export default function ChatForm(
-    { handleSubmit, input, handleInputChange} : 
-    { handleSubmit: any, input: any, handleInputChange: any}
+  { handleSubmit, input, handleInputChange} : 
+  { handleSubmit: any, input: string, handleInputChange: any}
 ) {
 
   const messageInputRef = useRef<HTMLInputElement>(null);

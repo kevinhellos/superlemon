@@ -1,5 +1,5 @@
 "use client";
-import { Crown, PanelLeftDashed, Trash2 } from "lucide-react";
+import { Crown, PanelLeftDashed, Trash2, UserCog } from "lucide-react";
 // import { useRouter } from "next/navigation";
 
 export default function Navbar() {
@@ -16,7 +16,7 @@ export default function Navbar() {
         </label>
       </div>
       <div className="flex">
-        <button 
+        {/* <button 
           type="button" 
           className={`
             bg-white border border-gray-200 shadow-sm px-3.5 py-2 rounded-full text-sm flex font-medium h-9
@@ -35,7 +35,12 @@ export default function Navbar() {
         >
           <Trash2 strokeWidth="1.5" size="19" className="me-2"/>
           Clear all chat history
-        </button>
+        </button> */}
+
+        <span className="bg-sky-100 text-sky-700 px-3.5 py-2 rounded-full text-sm flex font-medium h-9">
+          <UserCog strokeWidth="1.5" size="19" className="me-2"/>
+          BETA user
+        </span>
 
         {/* <span className="bg-purple-100 text-purple-700 px-3.5 py-2 rounded-full text-sm flex font-medium h-9">
           <Crown strokeWidth="1.5" size="19" className="me-2"/>

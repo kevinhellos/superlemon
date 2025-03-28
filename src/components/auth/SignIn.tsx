@@ -77,6 +77,21 @@ export default function SignIn(
         return () => unsubscribe();
     }, []);
 
+    // useEffect(() => {
+    //     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    //         if (user) {
+    //             try {
+    //                 await user.getIdToken(true); // Force refresh token
+    //                 router.push(afterSignInUrl);
+    //             } catch (error) {
+    //                 console.error("Error refreshing token:", error);
+    //             }
+    //         }
+    //     });
+
+    //     return () => unsubscribe();
+    // }, [router]);
+
     return (
         <div className="mx-auto mt-[15vh] max-w-md overflow-auto p-10 shadow-xs border border-gray-200 rounded-md">
             <h2 className="text-xl text-center font-serif">
@@ -101,7 +116,7 @@ export default function SignIn(
 
                     <label htmlFor="password">Password</label>
                     <input 
-                        type="text" 
+                        type="password" 
                         name="password"
                         className="k-input w-full mb-5"
                         placeholder="Enter your password"

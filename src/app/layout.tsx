@@ -1,5 +1,6 @@
+// import { Geist, Geist_Mono } from "next/font/google";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
 import "./globals.css";
 import AppLayout from "./_layout";
 
@@ -12,7 +13,6 @@ import AppLayout from "./_layout";
 //   variable: "--font-geist-mono",
 //   subsets: ["latin"],
 // });
-
 export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_APP_NAME,
   description: "AI Chatbot that's faster than making a lemonade",
