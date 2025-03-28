@@ -1,5 +1,6 @@
-import ChatPage from "./(chat)/ChatPage";
+
 import type { Metadata } from "next";
+import Chat from "./(chat)/page.client";
 
 export const metadata: Metadata = {
   title: "New chat",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function page() {
-  return <ChatPage/>
+  return <Chat/>
 }

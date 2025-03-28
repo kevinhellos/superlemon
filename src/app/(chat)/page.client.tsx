@@ -13,8 +13,9 @@ import ChatBubble from "@/components/message/ChatBubble";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/auth/firebase-client";
 import { mergeMessages } from "@/lib/utils";
+import { Toaster } from "react-hot-toast";
 
-export default function ChatPage() {
+export default function Chat() {
   const searchParams = useSearchParams(); // Get query params
   const [token, setToken] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -33,7 +34,7 @@ export default function ChatPage() {
       return chatHistory;
     }
     else {
-      setErrorMessage(`Failed to retrieve chat history data`);
+      setErrorMessage(`Failed to retrieve chat history for chat ${currentChatId}`);
       console.error(`[CLIENT ERROR]: Failed to retrieve chat history data for chat id ${chatId}`);
     }
   }
@@ -166,6 +167,9 @@ export default function ChatPage() {
 
   return (
     <ProtectedRoute loginUrl="/sign-in">
+      
+      <Toaster/>
+
       <ChatLayout>
         <Navbar />
 

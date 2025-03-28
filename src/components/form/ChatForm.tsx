@@ -1,8 +1,8 @@
 "use client";
 
+import { appData } from "@/app";
 import { Send } from "lucide-react";
 import { useEffect, useRef } from "react";
-
 export default function ChatForm(
   { handleSubmit, input, handleInputChange} : 
   { handleSubmit: any, input: string, handleInputChange: any}
@@ -31,8 +31,8 @@ export default function ChatForm(
           <Send strokeWidth="1.5" size="19" className="mx-auto text-center" />
         </button>
       </form>
-      <span className="text-xs block text-gray-200 text-center mb-1">
-        {process.env.NEXT_PUBLIC_APP_NAME} version {process.env.NEXT_PUBLIC_APP_VERSION}
+      <span className="text-xs block text-gray-300 text-center mb-1">
+        {process.env.NEXT_PUBLIC_APP_NAME} version {appData.version}
       </span>
     </div>
   )

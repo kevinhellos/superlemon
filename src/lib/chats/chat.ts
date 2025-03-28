@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/auth/firebase-client";
 
 export async function getUserChatHistory(userUid: string) {
@@ -16,10 +16,22 @@ export async function getUserChatHistory(userUid: string) {
       });
     });
 
+    // Fallback sorting (like Firestore default order)
+    chats.reverse(); // Reverse array to get latest on top
+
     return chats; // Return the array of chat objects
   } 
   catch (error) {
     console.error("Error fetching user chats:", error);
     return [];
+  }
+}
+
+export async function deleteChat(chatId: string){
+  try {
+    await deleteDoc(doc(db, "chats", chatId));
+  }
+  catch (error) {
+    console.error("Error deleting chats: ", error);
   }
 }
