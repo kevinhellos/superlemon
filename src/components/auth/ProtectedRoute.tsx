@@ -16,37 +16,37 @@ export default function ProtectedRoute(
 
   const [user, setUser] = useState<User>();
 
-  // useEffect(() => {
-  //   // setTimeout(() => {
-  //   const unsubscribe: Unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       setIsAuthenticated(true);
-  //       setUser(user);
-  //     }
-  //     else {
-  //       setIsAuthenticated(false);
-  //       router.push(loginUrl);
-  //     }
-  //     // setLoading(false);
-  //   });
-  //   return () => unsubscribe();
-  // // }, 2000);
-  // }, [router]);
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    // setTimeout(() => {
+    const unsubscribe: Unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        try {
-          await user.getIdToken(true); // Force refresh token
-        } 
-        catch (error) {
-          console.error("Error refreshing token:", error);
-        }
+        setIsAuthenticated(true);
+        setUser(user);
       }
+      else {
+        setIsAuthenticated(false);
+        router.push(loginUrl);
+      }
+      // setLoading(false);
     });
-
     return () => unsubscribe();
-}, [router]);
+  // }, 2000);
+  }, [router]);
+
+//   useEffect(() => {
+//     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+//       if (user) {
+//         try {
+//           await user.getIdToken(true); // Force refresh token
+//         } 
+//         catch (error) {
+//           console.error("Error refreshing token:", error);
+//         }
+//       }
+//     });
+
+//     return () => unsubscribe();
+// }, [router]);
 
   // if (loading) {
   //   return <p>Loading...</p>;
