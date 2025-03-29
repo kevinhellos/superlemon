@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth/firebase-admin";
 import { openai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 
-export const maxDuration = 30; // Duration for maximum stream
+export const maxDuration = 60; // Duration for maximum stream
 
 // Define a system prompt to guide the AI's behavior
 const SYSTEM_PROMPT = {
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         return result.toDataStreamResponse();
     } 
     catch (error: any) {
-        console.error("[SERVER ERROR]: Error in /api/chat: " + error);
+        console.error("[SERVER ERROR]: error in /api/chat: " + error);
 
         // Handle error codes
         if (error.code.includes("auth/id-token-expired")) {

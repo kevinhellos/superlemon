@@ -16,22 +16,37 @@ export default function ProtectedRoute(
 
   const [user, setUser] = useState<User>();
 
+  // useEffect(() => {
+  //   // setTimeout(() => {
+  //   const unsubscribe: Unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       setIsAuthenticated(true);
+  //       setUser(user);
+  //     }
+  //     else {
+  //       setIsAuthenticated(false);
+  //       router.push(loginUrl);
+  //     }
+  //     // setLoading(false);
+  //   });
+  //   return () => unsubscribe();
+  // // }, 2000);
+  // }, [router]);
+
   useEffect(() => {
-    // setTimeout(() => {
-    const unsubscribe: Unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setIsAuthenticated(true);
-        setUser(user);
+        try {
+          await user.getIdToken(true); // Force refresh token
+        } 
+        catch (error) {
+          console.error("Error refreshing token:", error);
+        }
       }
-      else {
-        setIsAuthenticated(false);
-        router.push(loginUrl);
-      }
-      // setLoading(false);
     });
+
     return () => unsubscribe();
-  // }, 2000);
-  }, [router]);
+}, [router]);
 
   // if (loading) {
   //   return <p>Loading...</p>;

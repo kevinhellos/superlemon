@@ -62,34 +62,34 @@ export default function SignIn(
         }
     }
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // Always redirect user to the afterSignInUrl if they visited/ re-visit
-                // the sign-in page after signing in
-                router.push(afterSignInUrl);
-            } 
-            else {
-                localStorage.removeItem("token");
-            }
-        });
-        return () => unsubscribe();
-    }, []);
-
     // useEffect(() => {
     //     const unsubscribe = onAuthStateChanged(auth, async (user) => {
     //         if (user) {
-    //             try {
-    //                 await user.getIdToken(true); // Force refresh token
-    //                 router.push(afterSignInUrl);
-    //             } catch (error) {
-    //                 console.error("Error refreshing token:", error);
-    //             }
+    //             // Always redirect user to the afterSignInUrl if they visited/ re-visit
+    //             // the sign-in page after signing in
+    //             router.push(afterSignInUrl);
+    //         } 
+    //         else {
+    //             localStorage.removeItem("token");
     //         }
     //     });
-
     //     return () => unsubscribe();
-    // }, [router]);
+    // }, []);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    await user.getIdToken(true); // Force refresh token
+                    router.push(afterSignInUrl);
+                } catch (error) {
+                    console.error("Error refreshing token:", error);
+                }
+            }
+        });
+
+        return () => unsubscribe();
+    }, [router]);
 
     return (
         <div className="mx-auto mt-[15vh] max-w-md overflow-auto p-10 shadow-xs border border-gray-200 rounded-md">

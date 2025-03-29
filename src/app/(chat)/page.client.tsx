@@ -14,15 +14,17 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/auth/firebase-client";
 import { mergeMessages } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";
+// import { Eye } from "lucide-react";
 
 export default function Chat() {
   const searchParams = useSearchParams(); // Get query params
   const [token, setToken] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [localMessages, setLocalMessages] = useState<any[]>([]); // Stores messages from localStorage
+  const [localMessages, setLocalMessages] = useState<any[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [chatResponseIsLoading, setChatResponseIsLoading] = useState<boolean>(false);
+  // const [canModifyChat, setCanModifyChat] = useState<boolean>(true);
   const router = useRouter();
 
   // Code works - DO NOT TOUCH
@@ -209,12 +211,24 @@ export default function Chat() {
         </div>
 
         {errorMessage && <Bar variant="red" message={errorMessage} cn="max-w-4xl" />}
-
         <ChatForm
           handleSubmit={handleFormSubmit}
           input={input}
           handleInputChange={handleInputChange}
         />
+        
+        {/* {canModifyChat ? (
+          <ChatForm
+            handleSubmit={handleFormSubmit}
+            input={input}
+            handleInputChange={handleInputChange}
+          />
+        ) : (
+          <div className="max-w-4xl mx-auto rounded-lg border bg-gray-50 border-gray-200 px-3 py-1.5 flex">
+            <Eye strokeWidth="1.5" size="19" className="mt-[2px] me-2"/>
+            This chat is in a read-only mode. You are not allowed to modify this chat.
+          </div>
+        )} */}
         
       </ChatLayout>
     </ProtectedRoute>
