@@ -1,3 +1,3 @@
 export const appData = {
-    version: "0.8.9a"
+    version: "0.8.9b"
 }

@@ -10,3 +10,8 @@ export function mergeMessages(existingMessages: any[], newMessages: any[]) {
   });
   return Array.from(messageMap.values());
 }
+
+export function setAuthToken(token: string) {
+  if (!token) return;
+  localStorage.setItem("token", token);
+}

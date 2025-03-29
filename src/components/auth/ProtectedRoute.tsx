@@ -4,6 +4,7 @@ import { useEffect, useState, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { Unsubscribe, User, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/auth/firebase-client";
+import { setAuthToken } from "@/lib/utils";
 
 export default function ProtectedRoute(
   { children, loginUrl } : 
@@ -42,7 +43,7 @@ export default function ProtectedRoute(
         try {
           // await user.getIdToken(true); // Force refresh token
           // console.log("[CLIENT LOG]: setting token to localStorage");
-          localStorage.setItem("token", await user.getIdToken(true));
+          setAuthToken(await user.getIdToken(true));
         } 
         catch (error) {
           console.error("[CLIENT ERROR]: error refreshing token: ", error);

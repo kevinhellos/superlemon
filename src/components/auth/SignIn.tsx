@@ -2,6 +2,7 @@
 
 import { signInWithGoogle } from "@/lib/auth/auth-client";
 import { auth } from "@/lib/auth/firebase-client";
+import { setAuthToken } from "@/lib/utils";
 import { AuthProviderType } from "@/models";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -39,7 +40,7 @@ export default function SignIn(
                 const { user } = await signInWithEmailAndPassword(auth, email, password);
                 if (user) {
                     setErrorMessage("");
-                    localStorage.setItem("token", await user.getIdToken(true));
+                    setAuthToken(await user.getIdToken(true));
                     router.push(afterSignInUrl);
                 }
             }
@@ -65,6 +66,7 @@ export default function SignIn(
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
             if (user) {
+                setAuthToken(await user.getIdToken(true));
                 // Always redirect user to the afterSignInUrl if they visited/ re-visit
                 // the sign-in page after signing in
                 router.push(afterSignInUrl);
