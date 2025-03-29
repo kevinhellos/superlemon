@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation"; // Import search params hook
 import ChatLayout from "@/layout/ChatLayout";
 import { useChat } from "@ai-sdk/react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import ChatForm from "@/components/form/ChatForm";
+import ChatForm, { AIModel } from "@/components/form/ChatForm";
 import Bar from "@/components/bar/Bar";
 import Navbar from "@/components/navbar/Navbar";
 import { v4 as uuidv4 } from "uuid";
@@ -15,6 +15,8 @@ import { auth, db } from "@/lib/auth/firebase-client";
 import { mergeMessages } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";
 // import { Eye } from "lucide-react";
+import { useCallback } from "react";
+import { debounce } from "lodash"; // Import lodash debounce
 
 export default function Chat() {
   const searchParams = useSearchParams(); // Get query params
@@ -24,7 +26,7 @@ export default function Chat() {
   const [currentChatId, setCurrentChatId] = useState<string>("");
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [chatResponseIsLoading, setChatResponseIsLoading] = useState<boolean>(false);
-  // const [canModifyChat, setCanModifyChat] = useState<boolean>(true);
+  const [aiModel, setAiModel] = useState<AIModel>("gpt-4o"); // Default model
   const router = useRouter();
 
   // Code works - DO NOT TOUCH
@@ -50,6 +52,7 @@ export default function Chat() {
     if (typeof window !== "undefined") {
       // Load token from localStorage
       const storedToken = localStorage.getItem("token");
+
       if (storedToken) {
         setToken(storedToken);
       }
@@ -80,6 +83,10 @@ export default function Chat() {
   // Code works - DO NOT TOUCH
   const { messages, input, handleInputChange, handleSubmit } = useChat({
     api: "/api/chat",
+    body: {
+      model: aiModel
+    },
+
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     
     onResponse: () => setChatResponseIsLoading(false),
@@ -149,28 +156,35 @@ export default function Chat() {
   }, [currentChatId]); // Run when chat ID changes
   // Code works - DO NOT TOUCH
 
-  // Code works - DO NOT TOUCH
-  // Save chat history to localStorage whenever a new message is sent
+  // Optmised code for saving message to db - start
+  const debouncedUpdateFirestore = useMemo(
+    () =>
+      debounce((updatedHistory, chatId) => {
+        console.log("[CLIENT LOG]: saving chat to db");
+        setDoc(doc(db, "chats", chatId), {
+          json: JSON.stringify(updatedHistory),
+          user_uid: auth?.currentUser?.uid,
+        }).catch((error) => {
+          console.error("[CLIENT ERROR]: failed to update chat history: ", error);
+        });
+      }, 1500), // Wait 1.5 seconds after chat response is fully rendered before saving to db
+    [] // Empty dependency array so it doesn’t recreate on re-render
+  );
+  
   useEffect(() => {
     if (messages.length > 0) {
       // Merge new messages with existing ones, removing duplicates
       const updatedHistory = mergeMessages(chatHistory, messages);
-
+  
       // Update local state
       setChatHistory(updatedHistory);
-      setLocalMessages(updatedHistory); // If still needed for UI updates
-
-      // Update Firebase
-      setDoc(doc(db, "chats", currentChatId), {
-        json: JSON.stringify(updatedHistory),
-        user_uid: auth?.currentUser?.uid
-      }).catch(error => {
-        console.error("[CLIENT ERROR]: failed to update chat history: ", error);
-      })
-
+      setLocalMessages(updatedHistory);
+  
+      // Call debounced Firestore update
+      debouncedUpdateFirestore(updatedHistory, currentChatId);
     }
-  }, [messages]);
-  // Code works - DO NOT TOUCH
+  }, [messages, currentChatId]); // Only re-run when messages or chat ID change
+  // Optmised code for saving message to db - end
 
   return (
     <ProtectedRoute loginUrl="/sign-in">
@@ -181,7 +195,7 @@ export default function Chat() {
         <Navbar />
 
         {/* Chat Messages */}
-        <div className="flex flex-col w-full max-w-4xl mx-auto h-[78vh] overflow-y-auto px-2">
+        <div className="flex flex-col w-full max-w-4xl mx-auto h-[76vh] overflow-y-auto px-2">
           
           {/* Render stored chat history first */}
           {localMessages.map((message, index) => (
@@ -215,21 +229,10 @@ export default function Chat() {
           handleSubmit={handleFormSubmit}
           input={input}
           handleInputChange={handleInputChange}
+          aiModel={aiModel}
+          setAiModel={setAiModel}
         />
-        
-        {/* {canModifyChat ? (
-          <ChatForm
-            handleSubmit={handleFormSubmit}
-            input={input}
-            handleInputChange={handleInputChange}
-          />
-        ) : (
-          <div className="max-w-4xl mx-auto rounded-lg border bg-gray-50 border-gray-200 px-3 py-1.5 flex">
-            <Eye strokeWidth="1.5" size="19" className="mt-[2px] me-2"/>
-            This chat is in a read-only mode. You are not allowed to modify this chat.
-          </div>
-        )} */}
-        
+                
       </ChatLayout>
     </ProtectedRoute>
   );

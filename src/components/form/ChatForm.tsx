@@ -2,10 +2,17 @@
 
 import { appData } from "@/app";
 import { Send } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+
+export type AIModel = "gpt-4o" | "o1-mini" | "o3-mini";
+
 export default function ChatForm(
-  { handleSubmit, input, handleInputChange} : 
-  { handleSubmit: any, input: string, handleInputChange: any}
+  { handleSubmit, input, handleInputChange, aiModel, setAiModel} : 
+  { handleSubmit: any, 
+    input: string, 
+    handleInputChange: any, 
+    aiModel: AIModel, 
+    setAiModel: Dispatch<SetStateAction<AIModel>>}
 ) {
 
   const messageInputRef = useRef<HTMLInputElement>(null);
@@ -23,10 +30,25 @@ export default function ChatForm(
           placeholder="Ask anything..., press enter to send"
           onChange={handleInputChange}
           ref={messageInputRef}
+          required
         />
+
+      {/* <select 
+        className="k-model-selector"
+        name="ai-model-selector" 
+        id="ai-model-selector"
+        value={aiModel}
+        onChange={(e) => setAiModel(e.target.value as AIModel)}
+        disabled
+      >
+        <option value="gpt-4o">gpt-4o</option>
+        <option value="o1-mini">o1-mini</option>
+        <option value="o3-mini">o3-mini</option>
+      </select> */}
+
         <button
           type="submit"
-          className="h-10 w-11 mt-[2px] hover:bg-gray-50 active:bg-gray-100 rounded-3xl cursor-pointer"
+          className="h-10 w-11 mt-[10px] me-2 hover:bg-gray-50 active:bg-gray-100 rounded-3xl cursor-pointer"
         >
           <Send strokeWidth="1.5" size="19" className="mx-auto text-center" />
         </button>

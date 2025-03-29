@@ -66,3 +66,10 @@ code {
   @apply
   border border-gray-200 rounded-md
 }
+
+.k-model-selector {
+  @apply
+  h-7 mt-4 me-3 rounded-full border border-gray-200 px-3 py-1 
+  text-sm text-gray-700 cursor-pointer shadow-xs disabled:bg-gray-100
+  disabled:cursor-not-allowed
+}

@@ -42,8 +42,13 @@ export async function POST(req: Request) {
         // Prepend the system prompt to the conversation history
         const modifiedMessages = [SYSTEM_PROMPT, ...body.messages];
 
+        // Models:
+        // gpt-4o
+        // o1-mini
+        // o3-mini
         const result = streamText({
-            model: openai("gpt-4o"),
+            // model: openai(body.model),
+            model: openai("gpt-4o"), // Force to use gpt-4o for now
             messages: modifiedMessages,
         });
 
