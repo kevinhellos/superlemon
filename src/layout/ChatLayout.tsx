@@ -103,14 +103,14 @@ export default function ChatLayout({ children }: { children: React.ReactNode }) 
             })}
 
             {/* Logout Button */}
-            <li className="fixed bottom-0 mb-2 w-full bg-white">
-              <a className="px-2 py-2 block w-full">
+            {/* <li className="fixed bottom-0 mb-2 w-fit bg-white">
+              <a className="px-2 py-2 block w-fit">
                 <SignOut
                   cn="px-3 py-2.5 hover:bg-red-50 hover:text-red-700 cursor-pointer rounded-md flex"
                   icon={<LogOut strokeWidth="1.5" size="19" className="mt-[2px] me-2" />}
                 />
               </a>
-            </li>
+            </li> */}
 
           </ul>
         </div>

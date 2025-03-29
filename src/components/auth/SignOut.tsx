@@ -4,8 +4,8 @@ import { logOut } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
 
 export default function SignOut(
-  { afterSignOutUrl, cn, icon } : 
-  { afterSignOutUrl?: string, cn?: string, icon?: React.ReactNode }
+  { afterSignOutUrl, cn, icon, hideText } : 
+  { afterSignOutUrl?: string, cn?: string, icon?: React.ReactNode, hideText?: boolean }
 ) {
 
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function SignOut(
       onClick={handleSignOut}
     >
       {icon && icon}
-      Sign out
+      {hideText ? "" : "Sign out"}
     </button>
   )
 }

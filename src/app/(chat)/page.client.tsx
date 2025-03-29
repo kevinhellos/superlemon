@@ -187,7 +187,7 @@ export default function Chat() {
           {localMessages.map((message, index) => (
             <div 
               key={`${message.id}-${index}`} 
-              className={`whitespace-pre-wrap mb-3 ${message.role === "user" ? "chat chat-end" : ""}`}
+              className={`whitespace-pre-wrap leading-tight mb-3 ${message.role === "user" ? "chat chat-end" : ""}`}
             >
               {message.parts.map((part: {type: string, text: string}, i: number) => {
                 if (part.type === "text") {
