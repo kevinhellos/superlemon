@@ -13,3 +13,9 @@ AI Chatbot that's faster than making a lemonade
 - Tailwind CSS + Daisy UI 5
 - Firebase (Firestore + Auth)
 - Programming languag: Typescript
+
+## Live site
+> [!NOTE]  
+> The live site is currently only available for BETA testers.
+> You can clone this repo and run it on your local machine 
+[superlemon.app](https://superlemon.app)
