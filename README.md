@@ -18,4 +18,4 @@ AI Chatbot that's faster than making a lemonade
 > [!NOTE]  
 > The live site is currently only available for BETA testers.
 > You can clone this repo and run it on your local machine 
-[superlemon.app](https://superlemon.app)
+- [superlemon.app](https://superlemon.app)
