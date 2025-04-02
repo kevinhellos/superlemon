@@ -13,3 +13,5 @@ export interface HttpFetchConfig {
   method: HttpMethod;
   authorizationToken: string;
 }
+
+export type AIModel = "gpt-4o" | "o1-mini" | "o3-mini";

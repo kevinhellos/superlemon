@@ -1,10 +1,9 @@
 "use client";
 
 import { appData } from "@/app";
+import { AIModel } from "@/models";
 import { Send } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
-
-export type AIModel = "gpt-4o" | "o1-mini" | "o3-mini";
 
 export default function ChatForm(
   { handleSubmit, input, handleInputChange, aiModel, setAiModel} : 
@@ -33,18 +32,17 @@ export default function ChatForm(
           required
         />
 
-      {/* <select 
+      <select 
         className="k-model-selector"
         name="ai-model-selector" 
         id="ai-model-selector"
         value={aiModel}
         onChange={(e) => setAiModel(e.target.value as AIModel)}
-        disabled
       >
         <option value="gpt-4o">gpt-4o</option>
         <option value="o1-mini">o1-mini</option>
         <option value="o3-mini">o3-mini</option>
-      </select> */}
+      </select>
 
         <button
           type="submit"

@@ -48,7 +48,7 @@ export async function POST(req: Request) {
         // o3-mini
         const result = streamText({
             // model: openai(body.model),
-            model: openai("gpt-4o"), // Force to use gpt-4o for now
+            model: openai(body.model || "gpt-4o"), // Force to use gpt-4o for now
             messages: modifiedMessages,
         });
 

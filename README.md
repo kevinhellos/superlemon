@@ -2,12 +2,13 @@
 AI Chatbot that's faster than making a lemonade
 ![superlemon-web](https://github.com/user-attachments/assets/5ddbed56-35f8-4820-826e-ee24f066b402)
 
-## Todo
-[X] Add a database that syncs a user's chat history
-[X] Add a feature to allow users to delete their chat history
-[X] Add a loading state in a case there's a delay for the chat response 
-[ ] Chat history should be rendered in a chronological order (latest at the top)
-[ ] Prevent other users from editing other's chat
-[X] Fixed auth to use refresh token (as currently after a period, users will be forced to relogin)
-[X] Fixed refresh token thing
-[ ] Add plan tier. Free plan: 5 messages in total. Premium user: unlimited.
+## Features
+[x] Super quick AI chat response with reponse streaming
+[x] Chat history persistence with almost instant loading
+[x] Code response with syntax highlighting
+
+## Tech Stack
+- Next JS + Vercel AI SDK
+- Tailwind CSS + Daisy UI 5
+- Firebase (Firestore + Auth)
+- Programming languag: Typescript
