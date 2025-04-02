@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"; // Import search p
 import ChatLayout from "@/layout/ChatLayout";
 import { useChat } from "@ai-sdk/react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import ChatForm, { AIModel } from "@/components/form/ChatForm";
+import ChatForm from "@/components/form/ChatForm";
 import Bar from "@/components/bar/Bar";
 import Navbar from "@/components/navbar/Navbar";
 import { v4 as uuidv4 } from "uuid";
@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 // import { Eye } from "lucide-react";
 import { useCallback } from "react";
 import { debounce } from "lodash"; // Import lodash debounce
+import { AIModel } from "@/models";
 
 export default function Chat() {
   const searchParams = useSearchParams(); // Get query params
@@ -106,7 +107,7 @@ export default function Chat() {
   });
   // Code works - DO NOT TOUCH
 
-   // Code works - DO NOT TOUCH
+  // Code works - DO NOT TOUCH
   async function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); // Prevent default form submission behavior (page refresh)
 
@@ -126,7 +127,7 @@ export default function Chat() {
     
     handleSubmit(event); // Call the original submit function
   }
-   // Code works - DO NOT TOUCH
+  // Code works - DO NOT TOUCH
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
