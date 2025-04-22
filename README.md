@@ -12,7 +12,7 @@ AI Chatbot that's faster than making a lemonade
 - Next JS + Vercel AI SDK
 - Tailwind CSS + Daisy UI 5
 - Firebase (Firestore + Auth)
-- Programming languag: Typescript
+- Programming language: Typescript
 
 ## Live site
 > [!NOTE]  
