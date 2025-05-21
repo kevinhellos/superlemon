@@ -52,7 +52,10 @@ export async function POST(req: Request) {
             messages: modifiedMessages,
         });
 
-        return result.toDataStreamResponse();
+        // return result.toDataStreamResponse();
+
+        // Disable the API chat for now
+        return new Response(JSON.stringify({ error: "Internal Server Error" }), { status: 500 });
     } 
     catch (error: any) {
         console.error("[SERVER ERROR]: error in /api/chat: " + error);
